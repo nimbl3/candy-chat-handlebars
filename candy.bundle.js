@@ -436,7 +436,7 @@ Candy.Core = function(self, Strophe, $) {
  */
 "use strict";
 
-/* global jQuery, Candy, window, Mustache, document */
+/* global jQuery, Candy, window, Handlebars, document */
 /** Class: Candy.View
  * The Candy View Class
  *
@@ -534,9 +534,15 @@ Candy.View = function(self, $) {
         _setupTranslation(_options.language);
         // Set path to emoticons
         Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + "img/emoticons/");
+        var template = Handlebars.compile(Candy.View.Template.Chat.pane);
+        Handlebars.registerPartial("tabs", Candy.View.Template.Chat.tabs);
+        Handlebars.registerPartial("rooms", Candy.View.Template.Chat.rooms);
+        Handlebars.registerPartial("modal", Candy.View.Template.Chat.modal);
+        Handlebars.registerPartial("toolbar", Candy.View.Template.Chat.toolbar);
+        Handlebars.registerPartial("toolbar", Candy.View.Template.Chat.soundcontrol);
         // Start DOMination...
         _current.container = container;
-        _current.container.html(Mustache.to_html(Candy.View.Template.Chat.pane, {
+        _current.container.html(template({
             tooltipEmoticons: $.i18n._("tooltipEmoticons"),
             tooltipSound: $.i18n._("tooltipSound"),
             tooltipAutoscroll: $.i18n._("tooltipAutoscroll"),
@@ -544,12 +550,6 @@ Candy.View = function(self, $) {
             tooltipAdministration: $.i18n._("tooltipAdministration"),
             tooltipUsercount: $.i18n._("tooltipUsercount"),
             resourcesPath: this.getOptions().resources
-        }, {
-            tabs: Candy.View.Template.Chat.tabs,
-            rooms: Candy.View.Template.Chat.rooms,
-            modal: Candy.View.Template.Chat.modal,
-            toolbar: Candy.View.Template.Chat.toolbar,
-            soundcontrol: Candy.View.Template.Chat.soundcontrol
         }));
         // ... and let the elements dance.
         _registerWindowHandlers();
@@ -2445,7 +2445,7 @@ Candy.Core.Event = function(self, Strophe, $) {
  */
 "use strict";
 
-/* global Candy, Strophe, Mustache, jQuery */
+/* global Candy, Strophe, Handlebars, jQuery */
 /** Class: Candy.View.Observer
  * Observes Candy core events
  *
@@ -2597,7 +2597,8 @@ Candy.View.Observer = function(self, $) {
                     actionLabel = $.i18n._(actorName ? "youHaveBeenBannedBy" : "youHaveBeenBanned", translationParams);
                     break;
                 }
-                Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
+                var template = Handlebars.compile(Candy.View.Template.Chat.Context.adminMessageReason);
+                Candy.View.Pane.Chat.Modal.show(template({
                     reason: args.reason,
                     _action: actionLabel,
                     _reason: $.i18n._("reasonWas", [ args.reason ])
@@ -2746,7 +2747,7 @@ Candy.View.Observer = function(self, $) {
  */
 "use strict";
 
-/* global Candy, document, Mustache, Strophe, Audio, jQuery */
+/* global Candy, document, Handlebars, Strophe, Audio, jQuery */
 /** Class: Candy.View.Pane
  * Candy view pane handles everything regarding DOM updates etc.
  *
@@ -2854,7 +2855,7 @@ Candy.View.Pane = function(self, $) {
 		 *   (String) roomType - Type of room: `groupchat` or `chat`
 		 */
         addTab: function(roomJid, roomName, roomType) {
-            var roomId = Candy.Util.jidToId(roomJid), html = Mustache.to_html(Candy.View.Template.Chat.tab, {
+            var roomId = Candy.Util.jidToId(roomJid), template = Handlebars.compile(Candy.View.Template.Chat.tab), html = template({
                 roomJid: roomJid,
                 roomId: roomId,
                 name: roomName || Strophe.getNodeFromJid(roomJid),
@@ -3014,7 +3015,7 @@ Candy.View.Pane = function(self, $) {
         adminMessage: function(subject, message) {
             if (Candy.View.getCurrent().roomJid) {
                 // Simply dismiss admin message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
-                var html = Mustache.to_html(Candy.View.Template.Chat.adminMessage, {
+                var template = Handlebars.compile(Candy.View.Template.Chat.adminMessage), html = template({
                     subject: subject,
                     message: message,
                     sender: $.i18n._("administratorMessageSubject"),
@@ -3059,7 +3060,7 @@ Candy.View.Pane = function(self, $) {
         onInfoMessage: function(roomJid, subject, message) {
             if (Candy.View.getCurrent().roomJid) {
                 // Simply dismiss info message if no room joined so far. TODO: maybe we should show those messages on a dedicated pane?
-                var html = Mustache.to_html(Candy.View.Template.Chat.infoMessage, {
+                var template = Handlebars.compile(Candy.View.Template.Chat.infoMessage), html = template({
                     subject: subject,
                     message: $.i18n._(message),
                     time: Candy.Util.localizedTime(new Date().toGMTString())
@@ -3305,7 +3306,8 @@ Candy.View.Pane = function(self, $) {
 			 *	(String) presetJid - optional user jid. if set, the user will only be prompted for password.
 			 */
             showLoginForm: function(message, presetJid) {
-                self.Chat.Modal.show((message ? message : "") + Mustache.to_html(Candy.View.Template.Login.form, {
+                var template = Handlebars.compile(Candy.View.Template.Login.form);
+                self.Chat.Modal.show((message ? message : "") + template({
                     _labelNickname: $.i18n._("labelNickname"),
                     _labelUsername: $.i18n._("labelUsername"),
                     _labelPassword: $.i18n._("labelPassword"),
@@ -3344,12 +3346,13 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) message - [optional] Message to show as the label
 			 */
             showEnterPasswordForm: function(roomJid, roomName, message) {
-                self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.enterPasswordForm, {
+                var template = Handlebars.compile(Candy.View.Template.PresenceError.enterPasswordForm);
+                self.Chat.Modal.show(template({
                     roomName: roomName,
                     _labelPassword: $.i18n._("labelPassword"),
                     _label: message ? message : $.i18n._("enterRoomPassword", [ roomName ]),
                     _joinSubmit: $.i18n._("enterRoomPasswordSubmit")
-                }), true);
+                }));
                 $("#password").focus();
                 // register submit handler
                 $("#enter-password-form").submit(function() {
@@ -3368,7 +3371,8 @@ Candy.View.Pane = function(self, $) {
 			 *   (String) roomJid - Room jid to join
 			 */
             showNicknameConflictForm: function(roomJid) {
-                self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.nicknameConflictForm, {
+                var template = Handlebars.compile(Candy.View.Template.PresenceError.nicknameConflictForm);
+                self.Chat.Modal.show(template({
                     _labelNickname: $.i18n._("labelNickname"),
                     _label: $.i18n._("nicknameConflict"),
                     _loginSubmit: $.i18n._("loginSubmit")
@@ -3392,7 +3396,8 @@ Candy.View.Pane = function(self, $) {
 			 *   (Array) replacements - array containing replacements for translation (%s)
 			 */
             showError: function(message, replacements) {
-                self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.PresenceError.displayError, {
+                var template = Handlebars.compile(Candy.View.Template.PresenceError.displayError);
+                self.Chat.Modal.show(template({
                     _error: $.i18n._(message, replacements)
                 }), true);
             }
@@ -3416,7 +3421,7 @@ Candy.View.Pane = function(self, $) {
                     content = target.attr("data-tooltip");
                 }
                 if (tooltip.length === 0) {
-                    var html = Mustache.to_html(Candy.View.Template.Chat.tooltip);
+                    var template = Handlebars.compile(Candy.View.Template.Chat.tooltip), html = template();
                     $("#chat-pane").append(html);
                     tooltip = $("#tooltip");
                 }
@@ -3448,7 +3453,7 @@ Candy.View.Pane = function(self, $) {
 			 */
             init: function() {
                 if ($("#context-menu").length === 0) {
-                    var html = Mustache.to_html(Candy.View.Template.Chat.Context.menu);
+                    var template = Handlebars.compile(Candy.View.Template.Chat.Context.menu), html = template();
                     $("#chat-pane").append(html);
                     $("#context-menu").mouseleave(function() {
                         $(this).fadeOut("fast");
@@ -3488,7 +3493,7 @@ Candy.View.Pane = function(self, $) {
                 };
                 for (id in menulinks) {
                     if (menulinks.hasOwnProperty(id)) {
-                        var link = menulinks[id], html = Mustache.to_html(Candy.View.Template.Chat.Context.menulinks, {
+                        var link = menulinks[id], template = Handlebars.compile(Candy.View.Template.Chat.Context.menulinks), html = template({
                             roomId: roomId,
                             "class": link["class"],
                             id: id,
@@ -3615,10 +3620,11 @@ Candy.View.Pane = function(self, $) {
                         "class": "kick",
                         label: $.i18n._("kickActionLabel"),
                         callback: function(e, roomJid, user) {
-                            self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextModalForm, {
+                            var template = Handlebars.compile(Candy.View.Template.Chat.Context.contextModalForm);
+                            self.Chat.Modal.show(template({
                                 _label: $.i18n._("reason"),
                                 _submit: $.i18n._("kickActionLabel")
-                            }), true);
+                            }));
                             $("#context-modal-field").focus();
                             $("#context-modal-form").submit(function() {
                                 Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), "kick", $("#context-modal-field").val());
@@ -3634,10 +3640,11 @@ Candy.View.Pane = function(self, $) {
                         "class": "ban",
                         label: $.i18n._("banActionLabel"),
                         callback: function(e, roomJid, user) {
-                            self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextModalForm, {
+                            var template = Handlebars.compile(Candy.View.Template.Chat.Context.contextModalForm);
+                            self.Chat.Modal.show(template({
                                 _label: $.i18n._("reason"),
                                 _submit: $.i18n._("banActionLabel")
-                            }), true);
+                            }));
                             $("#context-modal-field").focus();
                             $("#context-modal-form").submit(function() {
                                 Candy.Core.Action.Jabber.Room.Admin.UserAction(roomJid, user.getJid(), "ban", $("#context-modal-field").val());
@@ -3653,10 +3660,11 @@ Candy.View.Pane = function(self, $) {
                         "class": "subject",
                         label: $.i18n._("setSubjectActionLabel"),
                         callback: function(e, roomJid) {
-                            self.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.contextModalForm, {
+                            var template = Handlebars.compile(Candy.View.Template.Chat.Context.contextModalForm);
+                            self.Chat.Modal.show(template({
                                 _label: $.i18n._("subject"),
                                 _submit: $.i18n._("setSubjectActionLabel")
-                            }), true);
+                            }));
                             $("#context-modal-field").focus();
                             $("#context-modal-form").submit(function(e) {
                                 Candy.Core.Action.Jabber.Room.Admin.SetSubject(roomJid, $("#context-modal-field").val());
@@ -3736,7 +3744,11 @@ Candy.View.Pane = function(self, $) {
                 messageCount: 0,
                 scrollPosition: -1
             };
-            $("#chat-rooms").append(Mustache.to_html(Candy.View.Template.Room.pane, {
+            var template = Handlebars.compile(Candy.View.Template.Room.pane);
+            Handlebars.registerPartial("roster", Candy.View.Template.Roster.pane);
+            Handlebars.registerPartial("messages", Candy.View.Template.Message.pane);
+            Handlebars.registerPartial("form", Candy.View.Template.Room.form);
+            $("#chat-rooms").append(template({
                 roomId: roomId,
                 roomJid: roomJid,
                 roomType: roomType,
@@ -3746,10 +3758,6 @@ Candy.View.Pane = function(self, $) {
                 roster: {
                     _userOnline: $.i18n._("userOnline")
                 }
-            }, {
-                roster: Candy.View.Template.Roster.pane,
-                messages: Candy.View.Template.Message.pane,
-                form: Candy.View.Template.Room.form
             }));
             self.Chat.addTab(roomJid, roomName, roomType);
             self.Room.getPane(roomJid, ".message-form").submit(self.Message.submit);
@@ -3827,7 +3835,7 @@ Candy.View.Pane = function(self, $) {
 		 */
         setSubject: function(roomJid, subject) {
             subject = Candy.Util.Parser.linkify(Candy.Util.Parser.escape(subject));
-            var html = Mustache.to_html(Candy.View.Template.Room.subject, {
+            var template = Handlebars.compile(Candy.View.Template.Room.subject), html = template({
                 subject: subject,
                 roomName: self.Chat.rooms[roomJid].name,
                 _roomSubject: $.i18n._("roomSubject"),
@@ -4259,7 +4267,7 @@ Candy.View.Pane = function(self, $) {
             // a user joined the room
             if (action === "join") {
                 usercountDiff = 1;
-                var html = Mustache.to_html(Candy.View.Template.Roster.user, {
+                var template = Handlebars.compile(Candy.View.Template.Roster.user), html = template({
                     roomId: roomId,
                     userId: userId,
                     userJid: user.getJid(),
@@ -4528,7 +4536,7 @@ Candy.View.Pane = function(self, $) {
 			 *                           - (String) time - Localized time
 			 */
             $(Candy).triggerHandler("candy:view.message.before-render", renderEvtData);
-            var html = Mustache.to_html(renderEvtData.template, renderEvtData.templateData);
+            var template = Handlebars.compile(renderEvtData.template), html = template(renderEvtData.templateData);
             self.Room.appendToMessagePane(roomJid, html);
             var elem = self.Room.getPane(roomJid, ".message-pane").children().last();
             // click on username opens private chat

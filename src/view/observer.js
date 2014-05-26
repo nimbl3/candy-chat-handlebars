@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global Candy, Strophe, Mustache, jQuery */
+/* global Candy, Strophe, Handlebars, jQuery */
 
 /** Class: Candy.View.Observer
  * Observes Candy core events
@@ -171,7 +171,8 @@ Candy.View.Observer = (function(self, $) {
 						actionLabel = $.i18n._((actorName ? 'youHaveBeenBannedBy' : 'youHaveBeenBanned'), translationParams);
 						break;
 				}
-				Candy.View.Pane.Chat.Modal.show(Mustache.to_html(Candy.View.Template.Chat.Context.adminMessageReason, {
+                var template = Handlebars.compile(Candy.View.Template.Chat.Context.adminMessageReason);
+				Candy.View.Pane.Chat.Modal.show(template({
 					reason: args.reason,
 					_action: actionLabel,
 					_reason: $.i18n._('reasonWas', [args.reason])

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-/* global jQuery, Candy, window, Mustache, document */
+/* global jQuery, Candy, window, Handlebars, document */
 
 /** Class: Candy.View
  * The Candy View Class
@@ -113,9 +113,15 @@ Candy.View = (function(self, $) {
 		// Set path to emoticons
 		Candy.Util.Parser.setEmoticonPath(this.getOptions().resources + 'img/emoticons/');
 
+        var template = Handlebars.compile(Candy.View.Template.Chat.pane);
+        Handlebars.registerPartial('tabs', Candy.View.Template.Chat.tabs);
+        Handlebars.registerPartial('rooms', Candy.View.Template.Chat.rooms);
+        Handlebars.registerPartial('modal', Candy.View.Template.Chat.modal);
+        Handlebars.registerPartial('toolbar', Candy.View.Template.Chat.toolbar);
+        Handlebars.registerPartial('toolbar', Candy.View.Template.Chat.soundcontrol);
 		// Start DOMination...
 		_current.container = container;
-		_current.container.html(Mustache.to_html(Candy.View.Template.Chat.pane, {
+		_current.container.html(template({
 			tooltipEmoticons : $.i18n._('tooltipEmoticons'),
 			tooltipSound : $.i18n._('tooltipSound'),
 			tooltipAutoscroll : $.i18n._('tooltipAutoscroll'),
@@ -123,14 +129,7 @@ Candy.View = (function(self, $) {
 			tooltipAdministration : $.i18n._('tooltipAdministration'),
 			tooltipUsercount : $.i18n._('tooltipUsercount'),
 			resourcesPath : this.getOptions().resources
-		}, {
-			tabs: Candy.View.Template.Chat.tabs,
-			rooms: Candy.View.Template.Chat.rooms,
-			modal: Candy.View.Template.Chat.modal,
-			toolbar: Candy.View.Template.Chat.toolbar,
-			soundcontrol: Candy.View.Template.Chat.soundcontrol
 		}));
-
 		// ... and let the elements dance.
 		_registerWindowHandlers();
 		_initToolbar();

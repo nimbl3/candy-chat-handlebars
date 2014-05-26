@@ -7,6 +7,3 @@
 [submodule "libs/strophejs-plugins"]
 	path = libs/strophejs-plugins
 	url = git://github.com/strophe/strophejs-plugins.git
-[submodule "libs/mustache.js"]
-	path = libs/mustache.js
-	url = git://github.com/janl/mustache.js.git
