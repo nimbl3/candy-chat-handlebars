@@ -25,7 +25,7 @@ Candy.View.Template = (function(self){
 	};
 
 	self.Chat = {
-		pane: '<div id="chat-pane">{{> tabs}}{{> toolbar}}{{> rooms}}</div>{{> modal}}',
+		pane: '<div id="chat-pane">{{> tabs this}}{{> toolbar this}}{{> rooms this}}</div>{{> modal this}}',
 		rooms: '<div id="chat-rooms" class="rooms"></div>',
 		tabs: '<ul id="chat-tabs"></ul>',
 		tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
@@ -43,7 +43,7 @@ Candy.View.Template = (function(self){
 				'<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
 		toolbar: '<ul id="chat-toolbar">' +
 				'<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' +
-				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' +
+				'<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol this}}</li>' +
 				'<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' +
 				'<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' +
 				'</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' +
@@ -72,7 +72,7 @@ Candy.View.Template = (function(self){
 
 	self.Room = {
 		pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' +
-			'{{> roster}}{{> messages}}{{> form}}</div>',
+			'{{> roster this}}{{> messages this}}{{> form this}}</div>',
 		subject: '<li><small>{{time}}</small><div class="subject">' +
 				'<span class="label">{{roomName}}</span>' +
 				'<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',

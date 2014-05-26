@@ -539,7 +539,7 @@ Candy.View = function(self, $) {
         Handlebars.registerPartial("rooms", Candy.View.Template.Chat.rooms);
         Handlebars.registerPartial("modal", Candy.View.Template.Chat.modal);
         Handlebars.registerPartial("toolbar", Candy.View.Template.Chat.toolbar);
-        Handlebars.registerPartial("toolbar", Candy.View.Template.Chat.soundcontrol);
+        Handlebars.registerPartial("soundcontrol", Candy.View.Template.Chat.soundcontrol);
         // Start DOMination...
         _current.container = container;
         _current.container.html(template({
@@ -3752,12 +3752,8 @@ Candy.View.Pane = function(self, $) {
                 roomId: roomId,
                 roomJid: roomJid,
                 roomType: roomType,
-                form: {
-                    _messageSubmit: $.i18n._("messageSubmit")
-                },
-                roster: {
-                    _userOnline: $.i18n._("userOnline")
-                }
+                _messageSubmit: $.i18n._("messageSubmit"),
+                userOnline: $.i18n._("userOnline")
             }));
             self.Chat.addTab(roomJid, roomName, roomType);
             self.Room.getPane(roomJid, ".message-form").submit(self.Message.submit);
@@ -4604,14 +4600,14 @@ Candy.View.Template = function(self) {
         unreadmessages: "({{count}}) {{title}}"
     };
     self.Chat = {
-        pane: '<div id="chat-pane">{{> tabs}}{{> toolbar}}{{> rooms}}</div>{{> modal}}',
+        pane: '<div id="chat-pane">{{> tabs this}}{{> toolbar this}}{{> rooms this}}</div>{{> modal this}}',
         rooms: '<div id="chat-rooms" class="rooms"></div>',
         tabs: '<ul id="chat-tabs"></ul>',
         tab: '<li class="roomtype-{{roomType}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' + '<a href="#" class="label">{{#privateUserChat}}@{{/privateUserChat}}{{name}}</a>' + '<a href="#" class="transition"></a><a href="#" class="close">×</a>' + '<small class="unread"></small></li>',
         modal: '<div id="chat-modal"><a id="admin-message-cancel" class="close" href="#">×</a>' + '<span id="chat-modal-body"></span>' + '<img src="{{resourcesPath}}img/modal-spinner.gif" id="chat-modal-spinner" />' + '</div><div id="chat-modal-overlay"></div>',
         adminMessage: '<li><small>{{time}}</small><div class="adminmessage">' + '<span class="label">{{sender}}</span>' + '<span class="spacer">▸</span>{{subject}} {{message}}</div></li>',
         infoMessage: '<li><small>{{time}}</small><div class="infomessage">' + '<span class="spacer">•</span>{{subject}} {{message}}</div></li>',
-        toolbar: '<ul id="chat-toolbar">' + '<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' + '<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol}}</li>' + '<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' + '<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' + '</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' + '<li class="usercount" data-tooltip="{{tooltipUsercount}}">' + '<span id="chat-usercount"></span></li></ul>',
+        toolbar: '<ul id="chat-toolbar">' + '<li id="emoticons-icon" data-tooltip="{{tooltipEmoticons}}"></li>' + '<li id="chat-sound-control" class="checked" data-tooltip="{{tooltipSound}}">{{> soundcontrol this}}</li>' + '<li id="chat-autoscroll-control" class="checked" data-tooltip="{{tooltipAutoscroll}}"></li>' + '<li class="checked" id="chat-statusmessage-control" data-tooltip="{{tooltipStatusmessage}}">' + '</li><li class="context" data-tooltip="{{tooltipAdministration}}"></li>' + '<li class="usercount" data-tooltip="{{tooltipUsercount}}">' + '<span id="chat-usercount"></span></li></ul>',
         soundcontrol: '<script type="text/javascript">var audioplayerListener = new Object();' + " audioplayerListener.onInit = function() { };" + '</script><object id="chat-sound-player" type="application/x-shockwave-flash" data="{{resourcesPath}}audioplayer.swf"' + ' width="0" height="0"><param name="movie" value="{{resourcesPath}}audioplayer.swf" /><param name="AllowScriptAccess"' + ' value="always" /><param name="FlashVars" value="listener=audioplayerListener&amp;mp3={{resourcesPath}}notify.mp3" />' + "</object>",
         Context: {
             menu: '<div id="context-menu"><i class="arrow arrow-top"></i>' + '<ul></ul><i class="arrow arrow-bottom"></i></div>',
@@ -4622,7 +4618,7 @@ Candy.View.Template = function(self) {
         tooltip: '<div id="tooltip"><i class="arrow arrow-top"></i>' + '<div></div><i class="arrow arrow-bottom"></i></div>'
     };
     self.Room = {
-        pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' + "{{> roster}}{{> messages}}{{> form}}</div>",
+        pane: '<div class="room-pane roomtype-{{roomType}}" id="chat-room-{{roomId}}" data-roomjid="{{roomJid}}" data-roomtype="{{roomType}}">' + "{{> roster this}}{{> messages this}}{{> form this}}</div>",
         subject: '<li><small>{{time}}</small><div class="subject">' + '<span class="label">{{roomName}}</span>' + '<span class="spacer">▸</span>{{_roomSubject}} {{{subject}}}</div></li>',
         form: '<div class="message-form-wrapper">' + '<form method="post" class="message-form">' + '<input name="message" class="field" type="text" aria-label="Message Form Text Field" autocomplete="off" maxlength="1000" />' + '<input type="submit" class="submit" name="submit" value="{{_messageSubmit}}" /></form></div>'
     };

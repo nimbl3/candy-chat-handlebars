@@ -118,7 +118,7 @@ Candy.View = (function(self, $) {
         Handlebars.registerPartial('rooms', Candy.View.Template.Chat.rooms);
         Handlebars.registerPartial('modal', Candy.View.Template.Chat.modal);
         Handlebars.registerPartial('toolbar', Candy.View.Template.Chat.toolbar);
-        Handlebars.registerPartial('toolbar', Candy.View.Template.Chat.soundcontrol);
+        Handlebars.registerPartial('soundcontrol', Candy.View.Template.Chat.soundcontrol);
 		// Start DOMination...
 		_current.container = container;
 		_current.container.html(template({

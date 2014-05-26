@@ -1117,12 +1117,8 @@ Candy.View.Pane = (function(self, $) {
 				roomId: roomId,
 				roomJid: roomJid,
 				roomType: roomType,
-				form: {
-					_messageSubmit: $.i18n._('messageSubmit')
-				},
-				roster: {
-					_userOnline: $.i18n._('userOnline')
-				}
+				_messageSubmit: $.i18n._('messageSubmit'),
+				userOnline: $.i18n._('userOnline')
 			}));
 			self.Chat.addTab(roomJid, roomName, roomType);
 			self.Room.getPane(roomJid, '.message-form').submit(self.Message.submit);
