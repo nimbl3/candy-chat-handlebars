@@ -1052,6 +1052,13 @@ Candy.View.Pane = (function(self, $) {
 
 				$('#tooltip').hide();
 
+                // Hide context menu is visible
+                if (menu.is(':visible')){
+                    menu.fadeOut('fast');
+                    return;
+                }
+                // Else show the menu
+
 				for(i = Candy.Util.Parser.emoticons.length-1; i >= 0; i--) {
 					emoticons = '<img src="' + Candy.Util.Parser._emoticonPath + Candy.Util.Parser.emoticons[i].image + '" alt="' + Candy.Util.Parser.emoticons[i].plain + '" />' + emoticons;
 				}
