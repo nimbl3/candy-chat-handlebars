@@ -48,7 +48,7 @@ var Candy = (function(self, $) {
 		if (!options.viewClass) {
 			options.viewClass = self.View;
 		}
-		options.viewClass.init($('#candy'), options.view);
+		options.viewClass.init($('#zeemiChat'), options.view);
 		self.Core.init(service, options.core);
 	};
 

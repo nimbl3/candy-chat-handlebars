@@ -72,7 +72,31 @@ module.exports = function(grunt) {
 				files: {
 					'libs/libs.min.js': ['libs/libs.bundle.js']
 				}
-			}
+			},
+            'libs-no-handlebars': {
+                files: {
+                    'libs/libs.bundle.no-handlebars.js': [
+                        'libs/strophejs/strophe.js',
+                        'libs/strophejs-plugins/muc/strophe.muc.js',
+                        'libs/strophejs-plugins/disco/strophe.disco.js',
+                        'libs/strophejs-plugins/caps/strophe.caps.jsonly.js',
+                        'libs/jquery-i18n/jquery.i18n.js',
+                        'libs/dateformat/dateFormat.js'
+                    ]
+                },
+                options: {
+                    sourceMap: true,
+                    mangle: false,
+                    compress: false,
+                    beautify: true,
+                    preserveComments: 'all'
+                }
+            },
+            'libs-no-handlebars-min': {
+                files: {
+                    'libs/libs.no-handlebars.min.js': ['libs/libs.bundle.no-handlebars.js']
+                }
+            }
 		},
 		watch: {
 			bundle: {
@@ -82,7 +106,11 @@ module.exports = function(grunt) {
 			libs: {
 				files: ['libs/*/**/*.js'],
 				tasks: ['uglify:libs', 'uglify:libs-min', 'notify:libs']
-			}
+			},
+            'libs-no-handlebars': {
+                files: ['libs/*/**/*.js'],
+                tasks: ['uglify:libs-no-handlebars', 'uglify:libs-no-handlebars-min', 'notify:libs-no-handlebars']
+            }
 		},
 		natural_docs: {
 			all: {
@@ -96,6 +124,7 @@ module.exports = function(grunt) {
 		clean: {
 			bundle: ['./candy.bundle.js', './candy.bundle.map', './candy.min.js'],
 			libs: ['./libs/libs.bundle.js', './libs/libs.bundle.map', './libs/libs.min.js'],
+            'libs-no-handlebars': ['./libs/libs.bundle.no-handlebars.js', './libs/libs.bundle.no-handlebars.map', './libs/libs.no-handlebars.min.js'],
 			docs: ['./docs']
 		},
 		mkdir: {
@@ -116,6 +145,11 @@ module.exports = function(grunt) {
 					message: 'Libs updated'
 				}
 			},
+            'libs-no-handlebars': {
+                options: {
+                    message: 'Libs without Handlebars updated'
+                }
+            },
 			docs: {
 				options: {
 					message: 'Docs done'
@@ -139,7 +173,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-sync-pkg');
 
 	grunt.registerTask('default', [
-		'jshint', 'uglify:libs', 'uglify:libs-min',
+		'jshint', 'uglify:libs', 'uglify:libs-min','uglify:libs-no-handlebars', 'uglify:libs-no-handlebars-min',
 		'uglify:bundle', 'uglify:min', 'notify:default'
 	]);
 	grunt.registerTask('docs', ['mkdir:docs', 'natural_docs', 'notify:docs']);
